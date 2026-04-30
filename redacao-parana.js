@@ -1,92 +1,91 @@
-javascript:(function() {
+// == SCRIPT REDAÇÃO PARANÁ ==
+// Feito por: cris15k
 
-    let t = prompt("📝 SCRIPT REDAÇÃO PARANÁ\n\nCole sua redação aqui:", "");
-
-    if (!t || t.trim() === "") {
-        alert("Nenhum texto colado.");
+(function() {
+    // Interface inicial
+    let texto = prompt("📝 SCRIPT REDAÇÃO PARANÁ\n\nCole sua redação aqui:", "");
+    
+    if (!texto || texto.trim() === "") {
+        alert("❌ Nenhum texto foi colado.");
         return;
     }
 
-    t = t.trim();
+    texto = texto.trim();
 
-    let v = prompt(
-        "Velocidade:\n1 = Lenta\n2 = Rápida (recomendado)\n3 = Muito Rápida",
-        "2"
-    );
+    // Escolha de velocidade
+    let velocidade = prompt("Velocidade de digitação:\n\n1 → Lenta\n2 → Rápida (Recomendado)\n3 → Muito Rápida\n\nDigite 1, 2 ou 3:", "2");
+    
+    let delay = velocidade === "1" ? 80 : velocidade === "3" ? 8 : 25;
 
-    let d = v === "1" ? 80 : v === "3" ? 8 : 25;
+    alert("✅ Redação carregada!\n\nAgora clique no campo de digitação da plataforma e aguarde.\nNão mexa no mouse ou teclado enquanto estiver digitando.");
 
-    alert("✅ Texto carregado com sucesso!\n\nAgora clique no campo de digitação e não mexa no mouse/teclado.");
+    // Função principal de digitação
+    function iniciarDigitacao() {
+        let campo = document.activeElement;
 
-    function digitar() {
-        let e = document.activeElement;
-
-        if (
-            !e ||
-            (e.tagName !== "TEXTAREA" &&
-                e.tagName !== "INPUT" &&
-                !e.isContentEditable)
-        ) {
-            alert("❌ Clique primeiro no campo onde quer digitar!");
+        if (!campo || (campo.tagName !== "TEXTAREA" && campo.tagName !== "INPUT" && !campo.isContentEditable)) {
+            alert("❌ Erro: Clique primeiro no campo onde deseja digitar a redação!");
             return;
         }
 
-        let i = 0;
+        let index = 0;
 
-        function prox() {
-            if (i < t.length) {
-                let c = t[i];
+        function digitarProximo() {
+            if (index < texto.length) {
+                let char = texto[index];
 
-                if (e.isContentEditable) {
-                    document.execCommand("insertText", false, c);
+                if (campo.isContentEditable) {
+                    document.execCommand('insertText', false, char);
                 } else {
-                    let s = e.selectionStart;
-
-                    e.value =
-                        e.value.substring(0, s) +
-                        c +
-                        e.value.substring(e.selectionEnd);
-
-                    e.selectionStart = e.selectionEnd = s + 1;
+                    let start = campo.selectionStart;
+                    campo.value = campo.value.substring(0, start) + char + campo.value.substring(campo.selectionEnd);
+                    campo.selectionStart = campo.selectionEnd = start + 1;
                 }
 
-                e.dispatchEvent(new Event("input", { bubbles: true }));
-                e.dispatchEvent(new Event("change", { bubbles: true }));
+                // Dispara eventos importantes
+                campo.dispatchEvent(new Event('input', { bubbles: true }));
+                campo.dispatchEvent(new Event('change', { bubbles: true }));
 
-                i++;
-                setTimeout(prox, d);
+                index++;
+                setTimeout(digitarProximo, delay);
             }
         }
 
-        prox();
+        digitarProximo();
     }
 
-    setTimeout(digitar, 700);
+    // Pequeno delay para dar tempo de clicar no campo
+    setTimeout(iniciarDigitacao, 800);
 
+    // Rodapé azul "Feito por cris15k"
     let footer = document.createElement("div");
-
-    footer.style.position = "fixed";
-    footer.style.bottom = "10px";
-    footer.style.left = "10px";
-    footer.style.background = "#0066ff";
-    footer.style.color = "white";
-    footer.style.padding = "8px 12px";
-    footer.style.borderRadius = "6px";
-    footer.style.fontSize = "13px";
-    footer.style.zIndex = "999999";
-    footer.style.boxShadow = "0 2px 10px rgba(0,0,0,0.3)";
-    footer.style.cursor = "pointer";
-
+    footer.style.cssText = `
+        position: fixed;
+        bottom: 15px;
+        left: 15px;
+        background: #0066ff;
+        color: white;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        z-index: 9999999;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        cursor: pointer;
+        user-select: none;
+    `;
     footer.innerHTML = 'Feito por: <strong>cris15k</strong>';
-
-    footer.onclick = function () {
-        window.open("https://github.com/cris15k", "_blank");
+    footer.title = "Clique para abrir meu GitHub";
+    
+    footer.onclick = function() {
+        window.open('https://github.com/cris15k', '_blank');
     };
 
     document.body.appendChild(footer);
 
+    // Remove o footer automaticamente após 8 segundos
     setTimeout(() => {
-        footer.remove();
+        if (footer.parentNode) footer.parentNode.removeChild(footer);
     }, 8000);
 
 })();
